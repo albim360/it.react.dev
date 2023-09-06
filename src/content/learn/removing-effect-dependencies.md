@@ -1,26 +1,26 @@
 ---
-title: 'Removing Effect Dependencies'
+title: 'Rimozione delle Dipendenze degli Effetti'
 ---
 
 <Intro>
 
-When you write an Effect, the linter will verify that you've included every reactive value (like props and state) that the Effect reads in the list of your Effect's dependencies. This ensures that your Effect remains synchronized with the latest props and state of your component. Unnecessary dependencies may cause your Effect to run too often, or even create an infinite loop. Follow this guide to review and remove unnecessary dependencies from your Effects.
+Quando scrivi un Effetto, il linter verificherà che tu abbia incluso ogni valore reattivo (come props e state) che l'Effetto legge nell'elenco delle dipendenze del tuo Effetto. Ciò assicura che il tuo Effetto rimanga sincronizzato con le ultime props e lo stato del tuo componente. Le dipendenze non necessarie potrebbero far eseguire il tuo Effetto troppo spesso o addirittura creare un ciclo infinito. Segui questa guida per rivedere e rimuovere dipendenze non necessarie dai tuoi Effetti.
 
 </Intro>
 
 <YouWillLearn>
 
-- How to fix infinite Effect dependency loops
-- What to do when you want to remove a dependency
-- How to read a value from your Effect without "reacting" to it
-- How and why to avoid object and function dependencies
-- Why suppressing the dependency linter is dangerous, and what to do instead
+- Come risolvere cicli di dipendenza infiniti negli Effetti
+- Cosa fare quando desideri rimuovere una dipendenza
+- Come leggere un valore dal tuo Effetto senza "reattivarlo"
+- Come e perché evitare dipendenze da oggetti e funzioni
+- Perché sopprimere il linter delle dipendenze è pericoloso e cosa fare al suo posto
 
 </YouWillLearn>
 
-## Dependencies should match the code {/*dependencies-should-match-the-code*/}
+## Le dipendenze dovrebbero corrispondere al codice {/*dependencies-should-match-the-code*/}
 
-When you write an Effect, you first specify how to [start and stop](/learn/lifecycle-of-reactive-effects#the-lifecycle-of-an-effect) whatever you want your Effect to be doing:
+Quando scrivi un Effetto, prima specifici come [avviare e interrompere](/learn/lifecycle-of-reactive-effects#the-lifecycle-of-an-effect) ciò che desideri che il tuo Effetto faccia:
 
 ```js {5-7}
 const serverUrl = 'https://localhost:1234';
@@ -34,7 +34,8 @@ function ChatRoom({ roomId }) {
 }
 ```
 
-Then, if you leave the Effect dependencies empty (`[]`), the linter will suggest the correct dependencies:
+Poi, se lasci vuote le dipendenze dell'Effetto ('[]'), il linter suggerirà le dipendenze corrette:
+
 
 <Sandpack>
 
@@ -96,7 +97,7 @@ button { margin-left: 10px; }
 
 </Sandpack>
 
-Fill them in according to what the linter says:
+Compila le dipendenze secondo quanto suggerito dal linter:
 
 ```js {6}
 function ChatRoom({ roomId }) {
@@ -109,11 +110,9 @@ function ChatRoom({ roomId }) {
 }
 ```
 
-[Effects "react" to reactive values.](/learn/lifecycle-of-reactive-effects#effects-react-to-reactive-values) Since `roomId` is a reactive value (it can change due to a re-render), the linter verifies that you've specified it as a dependency. If `roomId` receives a different value, React will re-synchronize your Effect. This ensures that the chat stays connected to the selected room and "reacts" to the dropdown:
+[[Effetti "reagiscono" ai valori reattivi.](/learn/lifecycle-of-reactive-effects#effects-react-to-reactive-values) Poiché `roomId` è un valore reattivo (può cambiare a causa di un re-render), il linter verifica che tu l'abbia specificato come una dipendenza. Se `roomId` riceve un valore diverso, React ri-sincronizzerà il tuo Effetto. Ciò assicura che la chat rimanga connessa alla stanza selezionata e "reagisca" al menu a discesa:
 
-<Sandpack>
-
-```js
+```javascript
 import { useState, useEffect } from 'react';
 import { createConnection } from './chat.js';
 
@@ -125,22 +124,22 @@ function ChatRoom({ roomId }) {
     connection.connect();
     return () => connection.disconnect();
   }, [roomId]);
-  return <h1>Welcome to the {roomId} room!</h1>;
+  return <h1>Benvenuto nella stanza {roomId}!</h1>;
 }
 
 export default function App() {
-  const [roomId, setRoomId] = useState('general');
+  const [roomId, setRoomId] = useState('generale');
   return (
     <>
       <label>
-        Choose the chat room:{' '}
+        Scegli la stanza della chat:{' '}
         <select
           value={roomId}
           onChange={e => setRoomId(e.target.value)}
         >
-          <option value="general">general</option>
-          <option value="travel">travel</option>
-          <option value="music">music</option>
+          <option value="generale">generale</option>
+          <option value="viaggio">viaggio</option>
+          <option value="musica">musica</option>
         </select>
       </label>
       <hr />
@@ -149,16 +148,15 @@ export default function App() {
   );
 }
 ```
-
 ```js chat.js
 export function createConnection(serverUrl, roomId) {
-  // A real implementation would actually connect to the server
+  // Una vera implementazione si connetterebbe effettivamente al server
   return {
     connect() {
-      console.log('✅ Connecting to "' + roomId + '" room at ' + serverUrl + '...');
+      console.log('✅ Connessione alla stanza "' + roomId + '" in corso su ' + serverUrl + '...');
     },
     disconnect() {
-      console.log('❌ Disconnected from "' + roomId + '" room at ' + serverUrl);
+      console.log('❌ Disconnesso dalla stanza "' + roomId + '" su ' + serverUrl);
     }
   };
 }
